@@ -1,0 +1,3 @@
+protocol printable {
+    func prettyPrint()
+}
