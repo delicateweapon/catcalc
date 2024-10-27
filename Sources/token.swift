@@ -1,8 +1,8 @@
 enum Token {
     case LPAREN(index: String.Index)
     case RPAREN(index: String.Index)
-    case NUMBER(n: UInt32, index: String.Index)
-    case IDENT(s: String, index: String.Index)
+    case NUMBER(index: String.Index, n: UInt32)
+    case IDENT(index: String.Index, s: String)
     case OPERATOR(op: Operator, index: String.Index)
 }
 
@@ -26,22 +26,27 @@ class Tokenizer: PrettyPrint {
             let c = stream[currentIndex]
 
             switch c {
+
             case " ":
                 currentIndex = stream.index(after: currentIndex)
                 continue
+
             case "(":
                 self.tokens.append(.LPAREN(index: currentIndex))
+
             case ")":
                 self.tokens.append(.RPAREN(index: currentIndex))
+
             case let char where char.isNumber:
                 let start = currentIndex
                 while currentIndex < endIndex, stream[currentIndex].isNumber {
                     currentIndex = stream.index(after: currentIndex)
                 }
                 if let number = UInt32(stream[start..<currentIndex]) {
-                    self.tokens.append(.NUMBER(n: number, index: start))
+                    self.tokens.append(.NUMBER(index: start, n: number))
                 }
                 continue
+
             case let char where char.isLetter:
                 let start = currentIndex
                 while currentIndex < endIndex, stream[currentIndex].isLetter {
@@ -52,9 +57,10 @@ class Tokenizer: PrettyPrint {
                     let op: Operator = try Operator.fromSymbol(str: str)
                     self.tokens.append(.OPERATOR(op: op, index: start))
                 } catch OperatorError.invalidStr {
-                    self.tokens.append(.IDENT(s: str, index: start))
+                    self.tokens.append(.IDENT(index: start, s: str))
                 }
                 continue
+
             default:
                 do {
                     let op: Operator = try Operator.fromSymbol(str: String(c))
@@ -74,10 +80,10 @@ class Tokenizer: PrettyPrint {
                 coloredPrint("LPAREN", bg: .BG_BLACK, fg: .FG_MAGENTA)
             case .RPAREN:
                 coloredPrint("RPAREN", bg: .BG_BLACK, fg: .FG_MAGENTA)
-            case .NUMBER(let n, _):
+            case .NUMBER(_, let n):
                 print("NUMBER ", terminator: "")
                 coloredPrint("\(n)", bg: .BG_BLACK, fg: .FG_BLUE)
-            case .IDENT(let s, _):
+            case .IDENT(_, let s):
                 print("IDENT ", terminator: "")
                 coloredPrint("\(s)", bg: .BG_BLACK, fg: .FG_RED)
             case .OPERATOR(let op, _):

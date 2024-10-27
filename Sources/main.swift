@@ -1,4 +1,4 @@
-let stream = "3 * (x % sin y)"
+let stream = "3 * (x + sin y)"
 let tokenizer = Tokenizer()
 let ast = AST()
 
