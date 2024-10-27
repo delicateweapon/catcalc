@@ -3,7 +3,7 @@ enum Token {
     case RPAREN(index: String.Index)
     case NUMBER(index: String.Index, n: UInt32)
     case IDENT(index: String.Index, s: String)
-    case OPERATOR(op: Operator, index: String.Index)
+    case OPERATOR(index: String.Index, op: Operator)
 }
 
 enum TokenizerError: Error {
@@ -55,7 +55,7 @@ class Tokenizer: PrettyPrint {
                 let str = String(stream[start..<currentIndex])
                 do {
                     let op: Operator = try Operator.fromSymbol(str: str)
-                    self.tokens.append(.OPERATOR(op: op, index: start))
+                    self.tokens.append(.OPERATOR(index: start, op: op))
                 } catch OperatorError.invalidStr {
                     self.tokens.append(.IDENT(index: start, s: str))
                 }
@@ -64,7 +64,7 @@ class Tokenizer: PrettyPrint {
             default:
                 do {
                     let op: Operator = try Operator.fromSymbol(str: String(c))
-                    self.tokens.append(.OPERATOR(op: op, index: currentIndex))
+                    self.tokens.append(.OPERATOR(index: currentIndex, op: op))
                 } catch OperatorError.invalidStr {
                     throw TokenizerError.invalidChar(message: "Invalid Char", index: currentIndex)
                 }
@@ -86,7 +86,7 @@ class Tokenizer: PrettyPrint {
             case .IDENT(_, let s):
                 print("IDENT ", terminator: "")
                 coloredPrint("\(s)", bg: .BG_BLACK, fg: .FG_RED)
-            case .OPERATOR(let op, _):
+            case .OPERATOR(_, let op):
                 print("OPERATOR ", terminator: "")
                 coloredPrint("\(op)", bg: .BG_BLACK, fg: .FG_YELLOW)
             }

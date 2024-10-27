@@ -15,6 +15,33 @@ enum OperatorError: Error {
 }
 
 extension Operator {
+
+    func getArgsCount() -> UInt8 {
+        switch self {
+        case .ADD, .SUBTRACT, .MULTIPLY, .DIVIDE, .POW:
+            return 2
+        case .SIN, .COS, .TAN, .FACTORIAL:
+            return 1
+        }
+    }
+
+    func getPrecedence() -> UInt8 {
+        switch self {
+        case .ADD, .SUBTRACT:
+            return 0
+        case .MULTIPLY:
+            return 1
+        case .DIVIDE:
+            return 2
+        case .POW:
+            return 3
+        case .SIN, .COS, .TAN:
+            return 4
+        case .FACTORIAL:
+            return 5
+        }
+    }
+
     static func fromSymbol(str: String) throws -> Operator {
         switch str.lowercased() {
         case "add", "addition", "+":
